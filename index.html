@@ -8,10 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #FFB6C1 0%, #E5E5E5 50%, #FFFFFF 100%);
         }
+
         /* Bouton musique flottant */
         #musicBtn {
             position: fixed;
@@ -28,9 +30,54 @@
         #musicBtn:hover {
             background-color: #FF3D6B;
         }
+
+        /* ---- Animation cœur ---- */
+        #heartAnimation {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .big-heart {
+            font-size: 90px;
+            color: #ff6b9a;
+            opacity: 0;
+            transform: scale(0.3);
+            animation: popHeart 1.5s ease forwards;
+        }
+
+        @keyframes popHeart {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* petits cœurs flottants */
+        .floating-heart {
+            position: absolute;
+            font-size: 18px;
+            color: #ff9ec9;
+            opacity: 0.5;
+            animation: floatUp 3s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(20px) scale(0.8); opacity: 0.4; }
+            100% { transform: translateY(-120px) scale(1.4); opacity: 0; }
+        }
     </style>
 </head>
+
 <body class="min-h-screen font-sans">
+
+    <!-- Animation overlay -->
+    <div id="heartAnimation">
+        <div class="big-heart">💗</div>
+    </div>
 
     <div class="gradient-bg min-h-screen flex items-center justify-center">
         <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-8 border-2 border-pink">
@@ -42,11 +89,13 @@
             <form id="loginForm" class="space-y-6">
                 <div>
                     <label for="password" class="block text-sm font-medium text-dark">Mot de passe magique</label>
-                    <input type="password" id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink focus:border-pink">
+                    <input type="password" id="password" name="password"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink focus:border-pink">
                 </div>
                 
                 <div>
-                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-light bg-pink hover:bg-light-pink focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink">
+                    <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-light bg-pink hover:bg-light-pink focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink">
                         Ouvrir mon cœur <i data-feather="heart" class="ml-2"></i>
                     </button>
                 </div>
@@ -60,18 +109,41 @@
     <!-- Musique de fond -->
     <audio id="bgMusic" src="background-music/love for u.mp3" loop></audio>
 
-    <script src="script.js"></script>
     <script>
         feather.replace();
 
-        // Redirection du bouton vers navbar.js
+        const heartScreen = document.getElementById("heartAnimation");
+
+        function spawnFloatingHearts() {
+            for (let i = 0; i < 12; i++) {
+                const h = document.createElement("div");
+                h.className = "floating-heart";
+                h.textContent = "❤";
+                h.style.left = Math.random() * 100 + "%";
+                h.style.bottom = "40%";
+                h.style.animationDelay = (Math.random() * 1) + "s";
+                heartScreen.appendChild(h);
+
+                setTimeout(() => h.remove(), 3000);
+            }
+        }
+
         const btnCoeur = document.querySelector('#loginForm button');
+
         btnCoeur.addEventListener('click', (e) => {
-            e.preventDefault(); // empêche l'envoi du formulaire
-            window.location.href = 'navbar.js'; // redirection
+            e.preventDefault();
+
+            // Affiche l'animation
+            heartScreen.style.display = "flex";
+            spawnFloatingHearts();
+
+            // Redirection après l'animation
+            setTimeout(() => {
+                window.location.href = "heart.html";
+            }, 1800);
         });
 
-        // Contrôle musique
+        // 🎵 Contrôle musique
         const bgMusic = document.getElementById("bgMusic");
         const musicBtn = document.getElementById("musicBtn");
 
@@ -85,15 +157,12 @@
             }
         });
 
-        // Tenter autoplay
         window.addEventListener('load', () => {
             bgMusic.play().catch(() => {
-                // Si autoplay bloqué, l'utilisateur peut cliquer sur le bouton
                 musicBtn.textContent = "▶️ Musique";
             });
         });
     </script>
-    
 
 </body>
 </html>
