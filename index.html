@@ -12,6 +12,8 @@
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #FFB6C1 0%, #E5E5E5 50%, #FFFFFF 100%);
+            position: relative;
+            overflow: hidden;
         }
 
         /* Bouton musique flottant */
@@ -31,7 +33,7 @@
             background-color: #FF3D6B;
         }
 
-        /* ---- Animation cœur ---- */
+        /* ---- Animation overlay grand cœur ---- */
         #heartAnimation {
             position: fixed;
             inset: 0;
@@ -41,7 +43,6 @@
             align-items: center;
             z-index: 9999;
         }
-
         .big-heart {
             font-size: 90px;
             color: #ff6b9a;
@@ -49,7 +50,6 @@
             transform: scale(0.3);
             animation: popHeart 1.5s ease forwards;
         }
-
         @keyframes popHeart {
             0% { opacity: 0; transform: scale(0.3); }
             50% { opacity: 1; transform: scale(1.2); }
@@ -64,7 +64,6 @@
             opacity: 0.5;
             animation: floatUp 3s linear forwards;
         }
-
         @keyframes floatUp {
             0% { transform: translateY(20px) scale(0.8); opacity: 0.4; }
             100% { transform: translateY(-120px) scale(1.4); opacity: 0; }
@@ -74,11 +73,12 @@
 
 <body class="min-h-screen font-sans">
 
-    <!-- Animation overlay -->
+    <!-- Overlay grand cœur -->
     <div id="heartAnimation">
         <div class="big-heart">💗</div>
     </div>
 
+    <!-- Page principale -->
     <div class="gradient-bg min-h-screen flex items-center justify-center">
         <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-8 border-2 border-pink">
             <div class="text-center mb-8">
@@ -114,7 +114,28 @@
 
         const heartScreen = document.getElementById("heartAnimation");
 
-        function spawnFloatingHearts() {
+        // 🎈 Petits cœurs flottants en continu
+        function spawnFloatingHeartsContinuously() {
+            const gradientBg = document.querySelector('.gradient-bg');
+            setInterval(() => {
+                const h = document.createElement("div");
+                h.className = "floating-heart";
+                h.textContent = "❤";
+                h.style.left = Math.random() * 100 + "%";
+                h.style.bottom = "0%";
+                h.style.animationDelay = "0s";
+                gradientBg.appendChild(h);
+
+                setTimeout(() => h.remove(), 3000);
+            }, 300); // toutes les 0.3s
+        }
+        spawnFloatingHeartsContinuously();
+
+        // Animation grand cœur + redirection
+        const btnCoeur = document.querySelector('#loginForm button');
+        btnCoeur.addEventListener('click', (e) => {
+            e.preventDefault();
+            heartScreen.style.display = "flex";
             for (let i = 0; i < 12; i++) {
                 const h = document.createElement("div");
                 h.className = "floating-heart";
@@ -123,21 +144,8 @@
                 h.style.bottom = "40%";
                 h.style.animationDelay = (Math.random() * 1) + "s";
                 heartScreen.appendChild(h);
-
                 setTimeout(() => h.remove(), 3000);
             }
-        }
-
-        const btnCoeur = document.querySelector('#loginForm button');
-
-        btnCoeur.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            // Affiche l'animation
-            heartScreen.style.display = "flex";
-            spawnFloatingHearts();
-
-            // Redirection après l'animation
             setTimeout(() => {
                 window.location.href ="heart.html";
             }, 1800);
@@ -163,7 +171,5 @@
             });
         });
     </script>
-
 </body>
 </html>
-
